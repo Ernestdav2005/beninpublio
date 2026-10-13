@@ -39,4 +39,3 @@ CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone_unique ON users(phone);
