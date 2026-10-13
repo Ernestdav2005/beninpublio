@@ -2,17 +2,40 @@
 
 **Vos activités en ligne, simplement.**
 
-BeninPublio est un projet indépendant de Boutiko visant à créer des vitrines web pour les commerces, restaurants et petites entreprises.
+BeninPublio est une application indépendante de Boutiko pour créer des vitrines en ligne pour les commerces, restaurants et petites entreprises.
 
-## Architecture cible
-- Accueil public pour présenter le service et recueillir les demandes.
-- Espace administrateur privé pour créer les boutiques et gérer les accès.
-- Espace commerçant mobile pour ajouter, modifier, masquer et supprimer ses produits.
-- Pages publiques de boutique actualisées depuis les données.
-- Authentification et séparation stricte des données de chaque boutique.
+## Fonctionnalités déployées
+- Accueil public et connexion.
+- Première configuration protégée pour créer un compte administrateur.
+- Espace administrateur : créer une boutique, un compte commerçant et un mot de passe provisoire.
+- Espace commerçant adapté au téléphone : ajouter, modifier, masquer, publier et supprimer ses produits.
+- Boutique publique à l'adresse `/boutique/<adresse-courte>`, actualisée directement depuis la base de données.
+- Prix en FCFA, description et URL d'image publique facultative.
+- Sessions en cookie HttpOnly, Secure et SameSite=Strict ; mots de passe hachés avec PBKDF2 ; sessions stockées sous forme de hash.
+- Isolation par boutique côté serveur : les opérations produit sont limitées à l'identifiant de boutique tiré de la session authentifiée.
 
-## État actuel
-La première page d'accueil de présentation est en place. Les espaces privés, l'authentification, la base de données et le déploiement doivent encore être réalisés et testés avant un usage réel.
+## Adresses
+- Accueil : `/`
+- Première configuration administrateur : `/setup` (à faire une seule fois)
+- Connexion : `/login`
+- Espace administrateur : `/admin`
+- Espace commerçant : `/espace`
+- Boutique publique : `/boutique/<slug>`
+- Vérification technique : `/api/health`
+
+## Base de données
+La base Cloudflare D1 `beninpublio-db` est réservée à ce projet. Le schéma se trouve dans `schema.sql`. **Ne pas utiliser la base `boutiko-db`**.
+
+## Première configuration
+1. Ouvrir `/setup` sur le domaine de BeninPublio.
+2. Saisir le code de configuration transmis séparément.
+3. Choisir l'e-mail administrateur et un mot de passe unique d'au moins 12 caractères.
+4. Se connecter sur `/login`, puis créer les boutiques et fournir les identifiants provisoires aux commerçants.
+5. Conseiller aux commerçants de changer leur mot de passe provisoire après leur première connexion.
+
+## Limites connues à cette étape
+- Les photos de produits se saisissent actuellement via un lien HTTPS public ; l'envoi direct de photos depuis le téléphone et le partage automatique des identifiants par e-mail/WhatsApp ne sont pas encore intégrés.
+- L'application a été publiée sur Cloudflare Workers. Le test HTTP direct depuis l'environnement de développement n'a pas pu être exécuté, car celui-ci n'a pas d'accès DNS sortant ; une vérification finale dans le navigateur est donc encore nécessaire avant de confier des comptes à des clients.
 
 ## Sécurité
-Ne jamais exposer de secrets côté navigateur. Les commerçants ne doivent pouvoir accéder qu'aux données de leur propre boutique. Ne pas réutiliser les ressources de Boutiko.
+Ne jamais placer de secret dans le dépôt GitHub ni dans le navigateur. Ne pas réutiliser ou modifier les ressources de Boutiko. Les tests de sécurité multi-comptes et le parcours réel de bout en bout doivent être effectués avant une utilisation commerciale à grande échelle.
