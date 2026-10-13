@@ -36,4 +36,4 @@ if(p==="/setup"){let c=await env.DB.prepare("SELECT COUNT(*) n FROM users WHERE 
 if(p.startsWith("/boutique/")&&m==="GET")return await shopPage(decodeURIComponent(p.slice(9)),env);
 if(p==="/"||p==="/index.html")return home();
 return J({error:"Page introuvable."},404)
-}catch(e){return J({error:"Erreur interne. Réessayez dans quelques instants."},500)}}};
+}catch(e){console.error("BeninPublio request failed",{path:new URL(req.url).pathname,method:req.method,error:String(e&&e.stack||e)});return J({error:"Erreur interne. Réessayez dans quelques instants."},500)}}};
