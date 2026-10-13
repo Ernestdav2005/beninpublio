@@ -11,6 +11,7 @@ BeninPublio est une application indépendante de Boutiko pour créer des vitrine
 - Espace commerçant adapté au téléphone : ajouter, modifier, masquer, publier et supprimer ses produits.
 - Boutique publique à l'adresse `/boutique/<adresse-courte>`, actualisée directement depuis la base de données.
 - Prix en FCFA, description et URL d'image publique facultative.
+- Connexion avec le numéro WhatsApp et mot de passe.
 - Sessions en cookie HttpOnly, Secure et SameSite=Strict ; mots de passe hachés avec PBKDF2 ; sessions stockées sous forme de hash.
 - Isolation par boutique côté serveur : les opérations produit sont limitées à l'identifiant de boutique tiré de la session authentifiée.
 
@@ -29,8 +30,8 @@ La base Cloudflare D1 `beninpublio-db` est réservée à ce projet. Le schéma s
 ## Première configuration
 1. Ouvrir `/setup` sur le domaine de BeninPublio.
 2. Saisir le code de configuration transmis séparément.
-3. Choisir l'e-mail administrateur et un mot de passe unique d'au moins 12 caractères.
-4. Se connecter sur `/login`, puis créer les boutiques et fournir les identifiants provisoires aux commerçants.
+3. Choisir le numéro WhatsApp administrateur et un mot de passe unique d'au moins 12 caractères.
+4. Se connecter sur `/login`, puis créer les boutiques et fournir le numéro WhatsApp et le mot de passe provisoire aux commerçants.
 5. Conseiller aux commerçants de changer leur mot de passe provisoire après leur première connexion.
 
 ## Limites connues à cette étape
