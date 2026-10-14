@@ -6,7 +6,7 @@ const J=(x,s=200,h={})=>new Response(JSON.stringify(x),{status:s,headers:{"Conte
 const rand=(n=32)=>{let a=new Uint8Array(n);crypto.getRandomValues(a);return [...a].map(x=>x.toString(16).padStart(2,"0")).join("")};
 const normalizePhone=v=>{let d=String(v||"").trim().replace(/[^0-9]/g,"");if(d.startsWith("00"))d=d.slice(2);if(d.startsWith("229")&&(d.length===11||d.length===13))return "+"+d;if(d.length===10&&d.startsWith("01"))return "+229"+d;if(d.length===8)return "+229"+d;if(d.length>=10&&d.length<=15)return "+"+d;return ""};
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,"0")).join("");
-async function ph(p,s=rand(16)){let k=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveBits"]),b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(s),iterations:310000,hash:"SHA-256"},k,256);return s+":"+[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function ph(p,s=rand(16)){let k=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveBits"]),b=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(s),iterations:100000,hash:"SHA-256"},k,256);return s+":"+[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 async function verify(p,v){let [s,h]=String(v||"").split(":");return !!s&&await ph(p,s)===s+":"+h}
 const body=async r=>{try{return await r.json()}catch{return {}}};
 const rawcookie=r=>(r.headers.get("Cookie")||"").split(";").map(x=>x.trim()).find(x=>x.startsWith("bp_session="))?.slice(11)||"";
