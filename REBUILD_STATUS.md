@@ -1,46 +1,41 @@
-# État de la reconstruction — 14 octobre 2026
+# État de BeninPublio — 14 octobre 2026
 
-## Sécurité et environnement
-- Sauvegarde du dépôt préservée : `backup/before-rebuild-2026-10-14`.
-- Travail isolé sur `rebuild/foundation-v1`.
-- La branche `main` et le Worker de production n'ont pas été modifiés par ces commits.
-- Avant les changements de schéma, une exportation SQL de la base de production `beninpublio-db` a été demandée à Cloudflare. Le relevé de tables a confirmé 0 utilisateur, 0 boutique, 0 produit et 0 session.
-- Base D1 de test séparée créée : `beninpublio-staging-20261014`. Les colonnes des migrations 0002 et 0003 ont été vérifiées sur cette base ; les essais n'ont pas touché la base de production.
+## Version du dépôt
+- Dépôt principal : https://github.com/Ernestdav2005/beninpublio
+- Sauvegarde avant reconstruction : `backup/before-rebuild-2026-10-14`.
+- La reconstruction et les limites des trois formules sont fusionnées dans `main`.
+- Le secret GitHub Actions `CLOUDFLARE_API_TOKEN` a été confirmé présent par le propriétaire ; sa valeur n'est pas stockée dans ce document.
 
-## Fonctionnalités sur la branche
-- Vitrine publique responsive BeninPublio.
-- Création de pages boutique/restaurant, modèles, couleurs, présentation, WhatsApp de commande et photo de couverture.
-- Éditeur propriétaire pour modifier les pages, changer la formule, enregistrer, publier/masquer, prévisualiser en privé et partager le lien/QR.
-- Commandes WhatsApp avec message prérempli par produit.
-- Trois formules gérées côté serveur :
-  - `formule_1` : 30 produits maximum, 1 image par produit.
-  - `formule_2` : 100 produits maximum, 3 images par produit.
-  - `formule_3` : 150 produits maximum, 3 images par produit.
-- La limite de produits est contrôlée dans l'API et l'insertion utilise une condition SQL pour réduire le risque de dépassement lors de créations simultanées.
-- Les liens d'images de produits peuvent être fournis jusqu'à trois par produit selon la formule ; l'envoi direct depuis la galerie du téléphone n'est pas encore intégré.
-- La formule 1 est la valeur par défaut. Les noms commerciaux définitifs, les prix et les paiements récurrents ne sont pas configurés faute de tarifs/choix confirmés.
+## Formules configurées côté serveur
+- `formule_1` : 30 produits maximum, 1 image par produit.
+- `formule_2` : 100 produits maximum, 3 images par produit.
+- `formule_3` : 150 produits maximum, 3 images par produit.
+- La formule 1 est appliquée par défaut.
+- Les limites sont contrôlées côté API. Les créations de produits utilisent aussi une insertion SQL conditionnelle pour réduire les dépassements en cas de demandes simultanées.
+- Les images sont actuellement ajoutées par liens HTTPS ; l'envoi direct depuis la galerie du téléphone reste à développer.
+- Les prix, les noms commerciaux finaux et les paiements récurrents restent à définir.
 
-## Migrations
-- `migrations/0002_beninpublio_core.sql` ajoute les colonnes de personnalisation des pages.
-- `migrations/0003_product_plans_and_images.sql` ajoute la formule et les deux emplacements d'image supplémentaires.
-- `schema.sql` a été aligné pour une nouvelle installation.
-- Les deux migrations ont été appliquées à la base de test séparée et les colonnes vérifiées.
-- Aucune migration n'a encore été appliquée à la base de production.
+## Migrations et précautions
+- `migrations/0001_initial.sql` : création initiale idempotente des tables manquantes.
+- `migrations/0002_beninpublio_core.sql` : champs de personnalisation des pages.
+- `migrations/0003_product_plans_and_images.sql` : formule et champs d'images supplémentaires.
+- Une base D1 de test séparée a été utilisée pour contrôler les colonnes et requêtes de migration.
+- Les migrations de production sont exécutées par le workflow de déploiement avant la publication du Worker.
+- Ne pas supprimer l'historique du Worker ni la branche de sauvegarde avant validation de la nouvelle version en production.
+- Aucun script ne doit supprimer automatiquement les boutiques, les produits ou les utilisateurs.
 
-## Contrôles et prévention des régressions
-- Le Worker JavaScript passe le contrôle de syntaxe.
-- Les quatre scripts intégrés aux interfaces passent le contrôle de syntaxe.
-- Le fichier `scripts/check-worker.mjs` et le workflow GitHub Actions `.github/workflows/validate.yml` ont été ajoutés pour relancer ces contrôles sur les pushs et pull requests.
-- Les requêtes SQL de détection d'images au-delà de la formule et d'insertion conditionnelle ont été testées sur la base de test.
-- Aucun test navigateur de bout en bout avec une session administrateur/commerçant n'a encore été réalisé.
+## Contrôles automatiques
+- `scripts/check-worker.mjs` contrôle la syntaxe du Worker, les scripts intégrés et la logique de formule.
+- `.github/workflows/validate.yml` exécute les contrôles lors des pushs et pull requests.
+- `.github/workflows/deploy.yml` vérifie le Worker, applique les migrations D1, puis publie le Worker sur Cloudflare.
+- Un contrôle automatique de syntaxe ne remplace pas les tests de navigation et de permissions avec des comptes réels.
 
-## Avant publication en production
-- Exécuter le workflow de validation GitHub et corriger toute erreur.
-- Tester sur la base de test la création, l'édition, les limites des trois formules, le changement de formule, l'aperçu, la publication, le QR, WhatsApp et l'isolation entre deux commerçants.
-- Sauvegarder la base de production immédiatement avant migration.
-- Appliquer les migrations de façon additive, puis déployer le Worker avec la liaison D1 correcte.
-- Vérifier `/api/health`, la page publique et les routes authentifiées après déploiement.
-- Préparer un retour arrière du Worker si le contrôle post-déploiement échoue. Ne jamais restaurer ou remplacer la base sans besoin confirmé.
+## Améliorations prévues
+1. Vérifier le déploiement réel et les routes publiques après migration.
+2. Ajouter des rôles à permissions limitées pour les partenaires créateurs de modèles.
+3. Créer un système de duplication de structure de boutique : copier le modèle/la mise en page et les réglages autorisés, puis remplacer les données du client sans copier ses informations privées, ses identifiants ou ses commandes.
+4. Ajouter un éditeur de sections, typographies, liens, produits populaires et packs.
+5. Ajouter le téléversement direct des photos depuis le téléphone.
 
-## État
-La version n'est pas encore publiée en production. Aucun déploiement de la nouvelle version n'a été effectué.
+## État de publication
+Le dernier déploiement Cloudflare observé est daté du 13 octobre 2026. La publication de la version actuelle du dépôt doit être confirmée par un nouveau déploiement et des vérifications post-déploiement. Ne pas déclarer la nouvelle version publiée avant ces contrôles.
