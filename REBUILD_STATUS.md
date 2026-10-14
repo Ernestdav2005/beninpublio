@@ -4,7 +4,8 @@
 - Dépôt principal : https://github.com/Ernestdav2005/beninpublio
 - Sauvegarde avant reconstruction : `backup/before-rebuild-2026-10-14`.
 - La reconstruction et les limites des trois formules sont fusionnées dans `main`.
-- Le secret GitHub Actions `CLOUDFLARE_API_TOKEN` a été confirmé présent par le propriétaire ; sa valeur n'est pas stockée dans ce document.
+- Le propriétaire indique avoir créé un secret Cloudflare pour le projet Boutiko. Cela ne prouve pas que le secret est configuré dans le dépôt BeninPublio.
+- Le journal GitHub Actions du 14 octobre 2026 montre que `CLOUDFLARE_API_TOKEN` est transmis comme valeur vide au workflow BeninPublio. Le déploiement a donc échoué avant l'application des migrations. Ne pas déclarer la version publiée avant vérification.
 
 ## Formules configurées côté serveur
 - `formule_1` : 30 produits maximum, 1 image par produit.
@@ -27,15 +28,16 @@
 ## Contrôles automatiques
 - `scripts/check-worker.mjs` contrôle la syntaxe du Worker, les scripts intégrés et la logique de formule.
 - `.github/workflows/validate.yml` exécute les contrôles lors des pushs et pull requests.
-- `.github/workflows/deploy.yml` vérifie le Worker, applique les migrations D1, puis publie le Worker sur Cloudflare.
+- `.github/workflows/deploy.yml` vérifie le Worker, applique les migrations D1, puis publie le Worker.
 - Un contrôle automatique de syntaxe ne remplace pas les tests de navigation et de permissions avec des comptes réels.
 
 ## Améliorations prévues
-1. Vérifier le déploiement réel et les routes publiques après migration.
-2. Ajouter des rôles à permissions limitées pour les partenaires créateurs de modèles.
-3. Créer un système de duplication de structure de boutique : copier le modèle/la mise en page et les réglages autorisés, puis remplacer les données du client sans copier ses informations privées, ses identifiants ou ses commandes.
-4. Ajouter un éditeur de sections, typographies, liens, produits populaires et packs.
-5. Ajouter le téléversement direct des photos depuis le téléphone.
+1. Corriger l'accès du workflow au secret Cloudflare du dépôt BeninPublio, puis confirmer migration et déploiement.
+2. Vérifier les routes publiques après publication.
+3. Ajouter des rôles à permissions limitées pour les partenaires créateurs de modèles.
+4. Créer un outil d'import depuis URL qui analyse une boutique publique et génère une structure éditable inspirée de sa mise en page. Ne pas copier automatiquement du code, des textes, des photos, logos ou éléments propriétaires sans autorisation ; permettre l'utilisation des contenus fournis par le client.
+5. Ajouter un éditeur de sections, typographies, liens, produits populaires et packs.
+6. Ajouter le téléversement direct des photos depuis le téléphone.
 
 ## État de publication
-Le dernier déploiement Cloudflare observé est daté du 13 octobre 2026. La publication de la version actuelle du dépôt doit être confirmée par un nouveau déploiement et des vérifications post-déploiement. Ne pas déclarer la nouvelle version publiée avant ces contrôles.
+Le dernier déploiement Cloudflare confirmé est daté du 13 octobre 2026. Le workflow de déploiement du 14 octobre a échoué car `CLOUDFLARE_API_TOKEN` était vide dans l'environnement. La version actuelle du dépôt n'est pas confirmée en production. Ne pas supprimer la version actuellement servie avant une publication réussie et un contrôle du site.
