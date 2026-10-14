@@ -1,0 +1,10 @@
+name = "beninpublio"
+main = "src/worker.js"
+compatibility_date = "2026-10-13"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "beninpublio-db"
+database_id = "d8531a4b-4823-4b8c-b47a-8c8dee1ae821"
+migrations_dir = "migrations"
