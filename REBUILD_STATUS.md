@@ -1,29 +1,33 @@
 # État de la reconstruction — 14 octobre 2026
 
 ## Sécurité et branches
-- Sauvegarde existante : `backup/before-rebuild-2026-10-14`.
-- Reconstruction isolée : `rebuild/foundation-v1`.
-- `main` et le déploiement public n'ont pas été modifiés.
-- Aucune donnée, aucun compte et aucune table de production n'ont été supprimés ou migrés.
+- Sauvegarde préservée : `backup/before-rebuild-2026-10-14`.
+- Travail isolé sur `rebuild/foundation-v1`.
+- La branche `main` et le déploiement public n'ont pas été modifiés.
+- Aucune migration n'a été exécutée et aucune donnée réelle n'a été supprimée.
 
-## Cœur BeninPublio ajouté sur la branche de reconstruction
-- Vitrine publique responsive avec l'identité visuelle BeninPublio.
-- Formulaire propriétaire pour créer une page client avec type (boutique ou restaurant), modèle de départ, couleurs, présentation, WhatsApp public de commande et lien de couverture.
-- API propriétaire pour modifier les paramètres d'une page, valider les couleurs/liens et changer l'état de publication.
-- Page publique qui lit ces nouveaux paramètres et n'affiche pas une page marquée comme non publiée.
-- Migration additive `migrations/0002_beninpublio_core.sql` pour ajouter les champs nécessaires sans effacer les données existantes.
+## Fonctionnalités présentes sur la branche de reconstruction
+- Nouvelle vitrine publique responsive BeninPublio.
+- Création d'une page client en tant que boutique ou restaurant, avec modèle de départ, couleurs, présentation, WhatsApp public et photo de couverture.
+- Éditeur propriétaire pour ouvrir une page existante et modifier son nom, son type, son modèle, ses couleurs, sa présentation, sa photo de couverture et son numéro WhatsApp de commande.
+- Contrôles pour enregistrer, publier ou masquer une page.
+- Aperçu privé des pages non publiées, réservé à une session administrateur.
+- Lien public copiable et QR code de partage (le QR est rendu par un service externe).
+- Boutons de commande WhatsApp par produit, avec message prérempli ; le client confirme l'envoi dans WhatsApp.
+- Affichage de la photo de couverture et titre adapté aux boutiques ou restaurants.
+- Isolation des produits par boutique conservée dans les routes API existantes.
 
-## Vérification réalisée
-- Contrôle de syntaxe JavaScript du worker réussi via analyse du source récupéré depuis la branche.
-- Vérifié que les nouvelles routes et champs sont présents dans le code.
-- Ce contrôle ne remplace pas un test en environnement Cloudflare avec la base de données de test.
+## Vérifications effectuées
+- Le JavaScript principal du Worker a passé un contrôle de syntaxe après les modifications.
+- Contrôle séparé des scripts intégrés à l'interface : script 1: PASS; script 2: PASS; script 3: PASS; script 4: PASS.
+- Les fichiers ont été relus depuis la branche GitHub après les commits.
 
-## Limites restantes avant toute mise en production
-- La migration SQL n'a pas été exécutée sur aucune base.
-- Il faut ajouter l'interface propriétaire qui utilise l'API de personnalisation après création, puis vérifier le parcours complet de création, aperçu, publication et partage.
-- Le bouton de commande WhatsApp prérempli par produit, l'envoi de photos depuis le téléphone et le QR code restent à terminer.
-- Le code suppose que la migration a été appliquée ; ne pas déployer cette branche avant une sauvegarde et un test de migration sur une base séparée.
-- Aucun test de rendu réel dans un navigateur ou sur un téléphone n'a encore été effectué.
+## Avant la production
+- La migration additive `migrations/0002_beninpublio_core.sql` n'a pas été appliquée à aucune base.
+- Aucun rendu réel dans un navigateur/téléphone ni test de bout en bout avec D1 n'a été exécuté.
+- Les photos sont encore fournies par lien HTTPS ; l'envoi direct depuis la galerie du téléphone reste à construire.
+- Le QR code utilise un service externe ; il faut décider si on garde ce choix ou si on embarque une génération interne.
+- Il faut tester la création, la personnalisation, l'aperçu, la publication, le QR, la commande WhatsApp et l'isolation de deux comptes sur une base de test.
 
 ## Étape suivante
-Compléter l'éditeur propriétaire pour qu'il puisse ouvrir une page existante, modifier son modèle, ses couleurs, sa présentation et son état de publication, puis tester le parcours sur une base de test. Ne pas fusionner vers `main` ni toucher à la base de production tant que ces contrôles ne sont pas concluants.
+Préparer un environnement de test isolé, exécuter la migration uniquement sur cette base, puis réaliser les tests de bout en bout. Ne pas fusionner vers `main`, lancer la migration en production ou déployer tant que ces contrôles ne sont pas concluants.
